@@ -10,6 +10,8 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.*;
 import javafx.scene.text.Font;
+import javafx.scene.text.FontPosture;
+import javafx.scene.text.FontWeight;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 
@@ -20,32 +22,34 @@ public class NorseGodMain extends Application {
 		BorderPane root = new BorderPane();	//Main box	
 		root.setPadding(new Insets(10));
 		
+		GridPane listAndContent = new GridPane(); //Grid for the list and text content
 
-		GridPane listAndContent = new GridPane(); //Grid for the list and content
-
-		VBox content = new VBox(); //Box with content
-		content.setSpacing(5);
+		VBox content = new VBox(); //Box with text content
+		content.setSpacing(2);
+		content.setPadding(new Insets(10));
 
 		Label header = new Label("Norse Gods and Other Beings"); //Header over list and content
-		header.setFont(new Font(30));
-		
+		header.setFont(Font.font("", FontWeight.BOLD, 25));		
 
 		//Create ListView with god names
 		ListView<String> godList = new ListView<String>(); //New ListView
 		godList.setPrefWidth(150);	//Set width
-		for (NorseGod g : gods) { godList.getItems().add(g.getName()); } //Fill with name of gods from list
+		for (NorseGod g : gods) { godList.getItems().add(g.getName()); } //Fill with name of gods from list		
 
 		//Create the necessary labels for content
 		Label name = new Label();
-		name.setFont(new Font(18));
+		name.setFont(Font.font("",FontWeight.BOLD, 16));
 		Label race = new Label();
-		race.setFont(new Font(15));
+		race.setFont(Font.font("", FontPosture.ITALIC, 13));
 		Label desc = new Label();
-		desc.setWrapText(true);
-		desc.setTextAlignment(TextAlignment.JUSTIFY);
+		desc.setPadding(new Insets(10, 0, 0, 0)); //Extra padding on top of main text
+		desc.setWrapText(true); 
+		desc.setTextAlignment(TextAlignment.JUSTIFY); //Have each line fill out horizontally
+		
+		//Add content text to content node and put content in a scroll pane to allow scrolling
 		content.getChildren().addAll(name, race, desc);
 		ScrollPane scroll = new ScrollPane(content);
-		scroll.setFitToWidth(true);
+		scroll.setFitToWidth(true); //Lock width to window size
 		
 		//Add list and content to pane
 		listAndContent.add(godList,0,0);
@@ -55,17 +59,18 @@ public class NorseGodMain extends Application {
 		root.setTop(header);
 		root.setLeft(godList);
 		root.setCenter(scroll);
-
-		godList.getSelectionModel().selectedIndexProperty().addListener(ov	-> { 
-			//showJedi.setImage(manyJedi.get(jediList.getSelectionModel().getSelectedIndex()));
+		
+		//On selection of list item, update nodes with data from list of gods
+		godList.getSelectionModel().selectedIndexProperty().addListener(ov	-> {			
 			name.setText(gods.get(godList.getSelectionModel().getSelectedIndex()).getName());
 			race.setText(gods.get(godList.getSelectionModel().getSelectedIndex()).getRace());
 			desc.setText(gods.get(godList.getSelectionModel().getSelectedIndex()).getDesc());
 		});
+		godList.getSelectionModel().select(0); //Pre-select first item
 
-		Scene scene = new Scene(root, 640, 480);
+		Scene scene = new Scene(root, 640, 480); //Create scene
 
-		primaryStage.setScene(scene);
+		primaryStage.setScene(scene); //Add scene to stage
 		primaryStage.setTitle("Norse Gods and Other Beings");
 		primaryStage.show();
 	}
@@ -139,7 +144,25 @@ public class NorseGodMain extends Application {
 				+ " earthquakes. With the onset of Ragnarök, Loki is foretold to slip free from his bonds and to fight against the gods among the"
 				+ " forces of the jötnar, at which time he will encounter the god Heimdallr and the two will slay each other."));
 
+		gods.add(new NorseGod("Freyja", "Aesir", "In Norse mythology, Freyja (/ˈfreɪə/; Old Norse for \"(the) Lady\") is a goddess associated with"
+				+ " love, sex, beauty, fertility, gold, seiðr, war, and death. Freyja is the owner of the necklace Brísingamen, rides a chariot"
+				+ " pulled by two cats, accompanied by the boar Hildisvíni, and possesses a cloak of falcon feathers. By her husband Óðr, she is the"
+				+ " mother of two daughters, Hnoss and Gersemi. Along with her twin brother Freyr, her father Njörðr, and her mother (Njörðr's sister,"
+				+ " unnamed in sources), she is a member of the Vanir. Stemming from Old Norse Freyja, modern forms of the name include Freya, Freyia,"
+				+ " and Freja.\n\nFreyja rules over her heavenly field Fólkvangr and there receives half of those that die in battle, whereas the"
+				+ " other half go to the god Odin's hall, Valhalla. Within Fólkvangr lies her hall, Sessrúmnir. Freyja assists other deities by"
+				+ " allowing them to use her feathered cloak, is invoked in matters of fertility and love, and is frequently sought after by powerful"
+				+ " jötnar who wish to make her their wife. Freyja's husband, the god Óðr, is frequently absent. She cries tears of red gold for him,"
+				+ " and searches for him under assumed names. Freyja has numerous names, including Gefn, Hörn, Mardöll, Sýr, Valfreyja, and Vanadís."));
+		
+		gods.add(new NorseGod("Heimdallr", "Aesir", "In Norse mythology, Heimdallr is a god who possesses the resounding horn Gjallarhorn, owns the"
+				+ " golden-maned horse Gulltoppr, has gold teeth, and is the son of Nine Mothers, grandson of Aegir and great grandson of Fornjotr."
+				+ " Heimdallr is attested as possessing foreknowledge, keen eyesight and hearing, and keeps watch for the onset of Ragnarök while"
+				+ " drinking fine mead in his dwelling Himinbjörg, located where the burning rainbow bridge Bifröst meets heaven. Heimdallr is said"
+				+ " to be the originator of social classes among humanity and once regained Freyja's treasured possession Brísingamen while doing"
+				+ " battle in the shape of a seal with Loki. Heimdallr and Loki are foretold to kill one another during the events of Ragnarök."
+				+ " Heimdallr is additionally referred to as Rig, Hallinskiði, Gullintanni, and Vindlér or Vindhlér."));
+		
 		launch(args);
-
 	}
 }
