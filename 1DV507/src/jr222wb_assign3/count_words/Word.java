@@ -3,25 +3,17 @@ package jr222wb_assign3.count_words;
 public class Word implements Comparable<Word> {
 	private String word;
 	
-	public Word(String str) {
-		word = str;
-	}
+	public Word(String str) { word = str; }
 	
 	@Override
-	public String toString() {
-		return word;
-	}
+	public String toString() { return word; }
 	
 	@Override
-	public int hashCode() {
-		return word.toLowerCase().hashCode();		
-	}
+	public int hashCode() {	return word.toLowerCase().hashCode(); }
 	
 	@Override
 	public boolean equals(Object other) {		
-		if (word.toLowerCase().equals(other.toString().toLowerCase())) //Convert to lower case and compare
-			return true;
-		return false;
+		return word.toLowerCase().equals(other.toString().toLowerCase()); //Convert to lower case and compare		
 	}
 	
 	@Override
