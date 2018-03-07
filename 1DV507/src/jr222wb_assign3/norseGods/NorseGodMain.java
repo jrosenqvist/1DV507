@@ -61,10 +61,11 @@ public class NorseGodMain extends Application {
 		root.setCenter(scroll);
 		
 		//On selection of list item, update nodes with data from list of gods
-		godList.getSelectionModel().selectedIndexProperty().addListener(ov	-> {			
-			name.setText(gods.get(godList.getSelectionModel().getSelectedIndex()).getName());
-			race.setText(gods.get(godList.getSelectionModel().getSelectedIndex()).getRace());
-			desc.setText(gods.get(godList.getSelectionModel().getSelectedIndex()).getDesc());
+		godList.getSelectionModel().selectedIndexProperty().addListener(ov -> {
+			int index = godList.getSelectionModel().getSelectedIndex();
+			name.setText(gods.get(index).getName());
+			race.setText(gods.get(index).getRace());
+			desc.setText(gods.get(index).getDesc());
 		});
 		godList.getSelectionModel().select(0); //Pre-select first item
 
