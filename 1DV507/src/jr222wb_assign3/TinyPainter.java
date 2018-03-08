@@ -40,12 +40,12 @@ public class TinyPainter extends Application {
 
 		primaryStage.setScene(scene);
 		primaryStage.show();		
-		
+
 		scene.setOnMousePressed(e -> {
 			/* On mouse press, choose what to do based on selected shape. If necessary, read size.
 			 * Colour value is read when creating shape.
 			 */
-			
+
 			//Line
 			if (shape.getSelectionModel().getSelectedIndex() == 0) {				
 				double startX = e.getSceneX();
@@ -62,9 +62,20 @@ public class TinyPainter extends Application {
 
 			//Dot
 			if (shape.getSelectionModel().getSelectedIndex() == 1) {
-				Rectangle s = new Rectangle(e.getSceneX(), e.getSceneY(), size.getValue(), size.getValue());
-				s.setFill(colour.getValue());
-				root.getChildren().add(s);
+				//When only clicked
+				scene.setOnMouseClicked(c -> {
+					Rectangle s = new Rectangle(c.getSceneX(), c.getSceneY(), size.getValue(), size.getValue());
+					s.setFill(colour.getValue());
+					root.getChildren().add(s);
+				});
+				
+				//When also dragged
+				scene.setOnMouseDragged(d -> {
+					Rectangle s = new Rectangle(d.getSceneX(), d.getSceneY(), size.getValue(), size.getValue());
+					s.setFill(colour.getValue());
+					root.getChildren().add(s);
+				});
+
 				scene.setOnMouseReleased(r -> {}); //Problem with lambda from previous shape interfering without this line
 			}
 
