@@ -14,7 +14,7 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 
 public class RunningSanta extends Application {
-	private int count = 0, speed = 20; //Variables used for animation
+	private int count = 0, speed = 25; //Variables used for animation
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
@@ -55,12 +55,12 @@ public class RunningSanta extends Application {
 		
 		KeyFrame k = new KeyFrame(Duration.millis(100), e -> {			
 			santa.setImage(frames[count]); //Set new frame based on count value
-			if (count < frames.length - 1) //Each time run, increment count if last value of array is not reached				
+			if (count < frames.length - 1) //Each time run, increase count if last value of array is not reached				
 				count++;			
 			else 
 				count = 0; //Else start over
 
-			santa.setX(santa.getX() + speed); //Move santa 20 or -20 based on speed setting
+			santa.setX(santa.getX() + speed); //Move Santa based on speed value
 
 			if (santa.getX() > 800) {
 				santa.setRotate(180); //Rotate when reaching end
