@@ -14,6 +14,7 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 
 public class RunningSanta extends Application {
+	private int count = 0, speed = 20; //Variables used for animation
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
@@ -35,7 +36,6 @@ public class RunningSanta extends Application {
 
 		//Set properties for displaying Santa
 		ImageView santa = new ImageView(run1); 
-
 		santa.setSmooth(true);
 		santa.setFitHeight(150);
 		santa.setPreserveRatio(true);
@@ -51,27 +51,25 @@ public class RunningSanta extends Application {
 		primaryStage.show();		
 
 		//Array for keeping track of images
-		Image[] frames = {run1, run2, run3, run4, run5, run6, run7, run8, run9, run10, run11};
+		Image[] frames = {run1, run2, run3, run4, run5, run6, run7, run8, run9, run10, run11};		
 		
-		Count count = new Count();
-		Speed speed = new Speed();
 		KeyFrame k = new KeyFrame(Duration.millis(100), e -> {			
-			santa.setImage(frames[count.get()]); //Set new frame based on count value
-			if (count.get() < frames.length - 1) //Each time run, increment count if last value of array is not reached				
-				count.inc();			
+			santa.setImage(frames[count]); //Set new frame based on count value
+			if (count < frames.length - 1) //Each time run, increment count if last value of array is not reached				
+				count++;			
 			else 
-				count.set(0); //Else start over
+				count = 0; //Else start over
 
-			santa.setX(santa.getX() + speed.get()); //Move santa 20 or -20 based on speed setting
+			santa.setX(santa.getX() + speed); //Move santa 20 or -20 based on speed setting
 
 			if (santa.getX() > 800) {
 				santa.setRotate(180); //Rotate when reaching end
-				speed.set(-speed.get()); //Change move direction
+				speed = -speed; //Change move direction
 			}
 
 			else if (santa.getX() < 20) {
 				santa.setRotate(0); //Rotate back when reaching beginning
-				speed.set(-speed.get()); //Restore move direction
+				speed = -speed; //Restore move direction
 			}
 		});		
 
@@ -79,21 +77,7 @@ public class RunningSanta extends Application {
 		Timeline t = new Timeline(k);
 		t.setCycleCount(Timeline.INDEFINITE);
 		t.play();
-
-	}
-	//Container classes to set data from anonymous method
-	private static class Count {
-		private int count = 0;			
-		public void set(int n) { count = n; }
-		public void inc() { count++; }
-		public int get() { return count; }
-	}
-
-	private static class Speed {
-		private int speed = 20;
-		public int get() { return speed; }
-		public void set(int n) { speed = n; } 
-	}
+	}	
 
 	public static void main(String[] args) {
 		launch(args);
