@@ -1,8 +1,10 @@
 package jr222wb_assign4.time;
 
 public class Concatenation {
-	public static void main(String[] args) {
-		final int RUNS = 5; //Number of test cycles
+	
+	final static int RUNS = 5; //Number of test cycles
+	
+	public static void main(String[] args) {		
 		int[][] results = new int[4][2 * RUNS]; //Store results from each cycle
 		long before, current = 0; //Variables for time-keeping
 		int count; //Counter for tests
