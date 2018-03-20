@@ -1,0 +1,51 @@
+/**
+ * 
+ */
+package grail.semi_lattice;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+
+/**
+ * @author jonasl
+ *
+ */
+public class BitSetFactory<T> implements SetFactory<T> {
+	/**
+	 * An array used to map indexes (int) to objects
+	 */
+	private final ArrayList<T> elements = new ArrayList<T>();
+	/**
+	 * A map from objects to indexes (Integer)
+	 */
+	private final HashMap<T,Integer> indexer = new HashMap<T,Integer>(2048);
+	/**
+	 * The empty set
+	 */
+	//public final BitSet<T> empty_set = new BitSet<T>(this);
+	
+	private  int count = 0;
+	public  int indexOf(T element) {
+		Integer index = (Integer)indexer.get(element);
+		if (index == null) {
+			elements.add(element);
+			index = Integer.valueOf(count++);
+			indexer.put(element,index);
+		}
+		return index.intValue();
+	}
+	public T elementAt(int index) { return elements.get(index);}
+	
+	public LatticeSet<T> create(T single_element) {
+		return new BitSet<T>(single_element,this);
+	}
+
+	public LatticeSet<T> create(Iterable<T> elements) {
+		return new BitSet<T>(elements,this);
+	}
+	
+	public LatticeSet<T> createEmptySet() {return new BitSet<T>(this);}
+	
+	public int size() {return count;}
+
+}

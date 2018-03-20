@@ -1,0 +1,59 @@
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/svn/grail/!svn/ver/919/trunk/se.vxu.msi.grail/src/grail/semi_lattice
+END
+BitVector.java
+K 25
+svn:wc:ra_dav:version-url
+V 84
+/svn/grail/!svn/ver/918/trunk/se.vxu.msi.grail/src/grail/semi_lattice/BitVector.java
+END
+LatticeSet.java
+K 25
+svn:wc:ra_dav:version-url
+V 85
+/svn/grail/!svn/ver/918/trunk/se.vxu.msi.grail/src/grail/semi_lattice/LatticeSet.java
+END
+BitSetFactory.java
+K 25
+svn:wc:ra_dav:version-url
+V 88
+/svn/grail/!svn/ver/919/trunk/se.vxu.msi.grail/src/grail/semi_lattice/BitSetFactory.java
+END
+SemiLattice.java
+K 25
+svn:wc:ra_dav:version-url
+V 86
+/svn/grail/!svn/ver/918/trunk/se.vxu.msi.grail/src/grail/semi_lattice/SemiLattice.java
+END
+SetFactory.java
+K 25
+svn:wc:ra_dav:version-url
+V 85
+/svn/grail/!svn/ver/918/trunk/se.vxu.msi.grail/src/grail/semi_lattice/SetFactory.java
+END
+BitSetIterator.java
+K 25
+svn:wc:ra_dav:version-url
+V 89
+/svn/grail/!svn/ver/918/trunk/se.vxu.msi.grail/src/grail/semi_lattice/BitSetIterator.java
+END
+Purifier.java
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/svn/grail/!svn/ver/918/trunk/se.vxu.msi.grail/src/grail/semi_lattice/Purifier.java
+END
+HashPurifier.java
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/svn/grail/!svn/ver/918/trunk/se.vxu.msi.grail/src/grail/semi_lattice/HashPurifier.java
+END
+BitSet.java
+K 25
+svn:wc:ra_dav:version-url
+V 81
+/svn/grail/!svn/ver/918/trunk/se.vxu.msi.grail/src/grail/semi_lattice/BitSet.java
+END

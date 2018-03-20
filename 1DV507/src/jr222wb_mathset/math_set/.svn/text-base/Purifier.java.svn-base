@@ -1,0 +1,180 @@
+package grail.semi_lattice;
+
+import java.util.*;
+
+/**
+ * This abstract class represents a purifier intended to be used in different 
+ * lattice implementations. A purifier should do only one thing - it should 
+ * recognize if it has seen a LatticeValue with the same value (defined by
+ * LatticeValue.equalValues) before and in that case return that object. The 
+ * value should otherwise be stored.
+ * </p>
+ * We expect every implementation to use a hash table and have therefore added
+ * a few hash table related methods and a purify method based on that assumption.
+ * An implementation must only implement the two functions hash() and newCapacity().
+ * 
+ * @author jonasl
+ */
+
+public abstract class Purifier<T> {
+    /**
+     * The default initial capacity.
+     */
+    static final int DEFAULT_INITIAL_CAPACITY = 1024;
+    /**
+     * The load factor used when none specified in constructor.
+     **/
+    static final float DEFAULT_LOAD_FACTOR = 0.75f;
+    
+	protected int capacity;
+	protected int values = 0;
+	protected float maximum_load;
+	protected int rehash_size;
+	protected Value[] buckets;
+	
+	public Purifier() {
+		this(DEFAULT_INITIAL_CAPACITY,DEFAULT_LOAD_FACTOR);
+	}
+	public Purifier(int init_size) {
+		this(init_size,DEFAULT_LOAD_FACTOR);
+	}
+	public Purifier (int init_size, float maximum_load) {
+		capacity = nextCapacity(init_size);
+		buckets = new Value[capacity];
+		Arrays.fill(buckets,null);
+		this.maximum_load = maximum_load;
+		rehash_size = (int) ((double)capacity * maximum_load);
+	}
+
+	
+	protected abstract int hash(int hashValue);
+	/**
+	 * Computes the next larger appropriate capacity. It might
+	 * be next prime or something else. 
+	 * 
+	 * @param current_capacity
+	 * @return next large appropriate capacity
+	 */
+	protected abstract int nextCapacity(int n);
+	
+	public int countBuckets() {return capacity;}
+	public int countValues() {return values;}
+	public int maxDepth() {
+		int max = 0;
+		
+	    /* test all buckets.*/
+		for (int i=0;i<buckets.length;i++) {
+			Value v = buckets[i];
+			int n = 0;
+			while (v != null) {
+				n++;
+				v = v.next;
+			}
+			if (n>max) max = n;
+		}
+		return max;
+	}
+	
+	public int usedBuckets() {
+		int used = 0;
+		
+	    /* test all buckets.*/
+		for (int i=0;i<buckets.length;i++) {
+			if (buckets[i] != null) used++;
+		}
+		return used;
+	}
+	
+	public LatticeSet<T> purify(LatticeSet<T> value) {
+		int hv = value.hashValue();
+		int h = hash(hv);
+		//System.out.println(value+"  "+hv+"  "+h);
+		Value<T> first = buckets[h];
+
+		/* See if already stored */
+		Value<T> v = first;
+		while (v != null) {
+			LatticeSet<T> val = v.value;
+			if (hv==v.hashValue && value.equalElement(val)) {
+				/* found, return previous */
+				//System.out.println("\tO"+value+"  "+hv+"  "+h);
+				return val;
+			}
+			v = v.next;
+		}
+			
+		/* not found, add at front */
+		buckets[h] = new Value<T>(value,hv,first);
+		values++;
+		
+		/* rehash? */
+		if (values > rehash_size)
+			resize();
+		//System.out.println("New "+value);
+
+		//System.out.println("\tN"+value+"  "+hv+"  "+h);
+		return value;
+		
+	}
+	
+	private void resize() {
+		capacity = nextCapacity(2*capacity);
+		rehash_size = (int) ((double)capacity * maximum_load);
+		Value[] old_buckets = buckets; 
+		buckets = new Value[capacity];
+		Arrays.fill(buckets,null);
+		
+	    /* Transfer all values to new table.*/
+		for (int i=0;i<old_buckets.length;i++) {
+			Value v = old_buckets[i];
+			if (v != null) {
+				do {
+					Value next = v.next;
+					int index = hash(v.hashValue);
+					v.next = buckets[index];
+					buckets[index] = v;
+					v = next;
+				} while(v != null);
+			}
+		}
+
+		//System.out.println("Rehash: "+old_buckets.length +" --> "+ buckets.length);
+	}
+	
+	public List<LatticeSet<T>> values() {
+		ArrayList<LatticeSet<T>> list = new ArrayList<LatticeSet<T>>();
+		
+	    /* collect all values.*/
+		for (int i=0;i<buckets.length;i++) {
+			Value<T> v = buckets[i];
+			while (v != null) {
+				list.add(v.value);
+				v = v.next;
+			}
+		}
+		return list;
+	}
+	
+	public String toString() {
+		StringBuffer buf = new StringBuffer();
+		buf.append("HashInfo: ");
+		buf.append("  Buckets = "+countBuckets());
+		buf.append("  (used "+usedBuckets());
+		buf.append("),  Elements = "+countValues());
+		buf.append(",  MaxDepth = "+maxDepth());
+		return buf.toString();
+	}
+	
+	/* Inner class used as linked list in buckets */
+	private class Value<X> {
+		private LatticeSet<X> value;
+		private Value<X> next = null;
+		private int hashValue;
+		private Value(LatticeSet<X> value,int hashValue, Value<X> next) {
+			this.value = value;
+			this.hashValue = hashValue;
+			this.next = next;
+		}
+	}
+
+}

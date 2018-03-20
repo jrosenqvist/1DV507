@@ -1,0 +1,33 @@
+/**
+ * 
+ */
+package grail.semi_lattice;
+
+
+/**
+ * @author jonasl
+ *
+ */
+public interface SetFactory<T> {
+
+	/**
+	 * Creates a new SimpleSet containing single_element. The type of
+	 * of LatticeSet returned depends on what SetKind that is used.
+	 * 
+	 * @param single_element
+	 * @return a new SimpleSet
+	 */
+	public LatticeSet<T> create(T single_element);
+
+	public LatticeSet<T> create(Iterable<T> elements);
+	
+	/**
+	 * Returns a new empty set
+	 */
+	public LatticeSet<T> createEmptySet();
+	
+	/**
+	 * Returns the number of elements used by this factory
+	 */
+	public int size();
+}

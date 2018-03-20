@@ -1,0 +1,125 @@
+/*
+* This software is ...
+*
+*      SemiLattice.java
+*      Created 2007-05
+*/
+package grail.semi_lattice;
+ 
+import java.util.Iterator;
+/**
+ *
+ * @author jonasl
+ */
+
+
+public class SemiLattice<T> {
+	/* Constants */
+	private final float MAX_LOAD;   // Default 0.85f
+	private final int INIT_CAPACITY; // Default 4096
+	
+	/* Essential */
+    protected final Purifier<T> purifier; 
+    protected final LatticeSet<T> bottom;
+    private final SetFactory<T> set_factory;
+
+    
+	public SemiLattice(int init_capacity, float max_load, SetFactory<T> factory) {
+		INIT_CAPACITY = init_capacity;
+		MAX_LOAD = max_load;
+		set_factory = factory;
+		bottom = (LatticeSet<T>)factory.createEmptySet();
+		purifier = new HashPurifier<T>(INIT_CAPACITY,MAX_LOAD);
+		purifier.purify(bottom);		
+	}
+
+	public SemiLattice() {
+		this(4096,0.85f, new BitSetFactory<T>());
+	}
+	
+
+	/**
+	 * Returns the lattice bottom element.
+	 * 
+	 * @return, the bottom element.
+	 */
+	public LatticeSet<T> getBOT() {return bottom;}
+
+
+	/**
+	 * Creates and adds a new LatticeSet to the lattice if not already added. 
+	 * It uses the method <code>LatticeValue.equalValues()</code> to decide whether 
+	 * two values are equal.
+	 * 
+	 * @param val, a value to be added.
+	 * @return, the input value if not added before. The already added value otherwise.
+	 */
+	public LatticeSet<T> create(T single_element) {
+		LatticeSet<T> s = set_factory.create(single_element);
+		return purifier.purify(s);
+	}
+	
+	public LatticeSet<T> create(Iterable<T> elements) {
+		LatticeSet<T> s = set_factory.create(elements);
+		return purifier.purify(s);
+	}
+	
+
+	/**
+	 * Returns the number of elements currently stored in the lattice.
+	 * 
+	 * @return, the lattice size
+	 */
+	public int countElements() {
+		return purifier.countValues();
+	}
+ 	/**
+ 	 * Returns an iterator over the lattice values.
+ 	 * 
+ 	 * @return, an lattice iterator
+ 	 */
+	public Iterator<LatticeSet<T>> iterator(){
+		return purifier.values().iterator();
+	}
+	
+	/**
+	 * Checks if two values represents the same value.
+	 * 
+	 * @param s1, first value
+	 * @param s2, second value
+	 * @return, true if equal, otherwise false.
+	 */
+	public boolean equals(LatticeSet<T> s1,LatticeSet<T> s2) {
+		return s1 == s2;
+	}
+	
+	/**
+	 * The lattice join operation. Union in this case.
+	 * @param s1, first value
+	 * @param s2, second value
+	 * @return, the join of the first and second value.
+	 */	
+	public LatticeSet<T> join(LatticeSet<T> ls1, LatticeSet<T> ls2){
+		if (ls1 == bottom) return ls2;
+		if (ls2 == bottom) return ls1;
+		if (ls1 == ls2) return ls1;
+		
+		return  purifier.purify(ls1.join(ls2));
+	}
+	
+	/**
+	 * The lattice meet operation. Intersection in this case.
+	 * @param s1, first value
+	 * @param s2, second value
+	 * @return, the meet of the first and second value.
+	 */
+	public LatticeSet<T> meet(LatticeSet<T> ls1, LatticeSet<T> ls2){
+		if (ls1 == bottom|| ls2 == bottom) return bottom;
+		else if (ls1 == ls2) return ls1;
+
+		return purifier.purify(ls1.meet(ls2));
+	}
+
+	public String toString() {return purifier.toString();}
+}
+

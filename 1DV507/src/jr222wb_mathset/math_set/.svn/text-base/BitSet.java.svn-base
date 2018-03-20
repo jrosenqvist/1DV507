@@ -1,0 +1,300 @@
+/*
+*   BitLatticeSet.java
+*
+*   Created 2005-nov-05, 22:50:22
+*/
+package grail.semi_lattice;
+
+
+import grail.semi_lattice.BitVector;
+
+import java.util.*;
+
+/**
+ * This is the bit set implementation of a LatticeSet.
+ * It uses the BitVector from the Soot project.
+ * </p>
+ * Before usage, the BitLatticeSet class needs to be initialized through a call to 
+ * initSets(Collection all_elements) where the collection contains all possible members of the 
+ * set. This is due to the fact that the size of the bit sets and the bit positions
+ * of the members of the Bits has to be decided before any sets can be created.
+ * 
+ * @author jonasl
+ *
+ */
+public class BitSet<T> implements LatticeSet<T> {	
+
+	private final BitSetFactory<T> set_factory;
+	private BitVector bits = null;
+	private int size = -1;  // -1  ==> size unknown
+	private int hash_value = -1;  // -1  ==> size unknown
+	private T singleton = null;
+	
+	/*
+	 * Creates an empty BitLatticeSet. 
+	 */
+	BitSet(BitSetFactory<T> factory) {
+		set_factory = factory;
+		bits = new BitVector();
+	}
+
+	
+	/**
+	 * Creates a BitSet initialized
+	 * with a single element.
+	 */
+	
+	BitSet(T element,BitSetFactory<T> factory) {
+		set_factory = factory;
+		int index = factory.indexOf(element);
+		bits = new BitVector(index);
+		bits.set(index);
+		hash_value = index;
+		size = 1;
+		singleton = element;
+	}
+	
+	/**
+	 * Creates a BitSet initialized 
+	 * with the supplied collection of elements.
+	 */
+	BitSet(Iterable<T> elements, BitSetFactory<T> factory) {
+		set_factory = factory;
+		bits = new BitVector();
+		int sz = 0;
+		Iterator<T> it = elements.iterator();
+		T o = null;
+		while (it.hasNext()) {
+			sz++;
+			o = it.next();
+			addElement(o);
+		}
+		size = sz;
+		if (size == 1) {
+			singleton = o;
+			hash_value = factory.indexOf(o);
+		}
+	}
+	
+	/**
+	 * Computes the intersection between <code>this</code> and the supplied 
+	 * <code>set</code>. 
+	 */
+	public void intersection(LatticeSet<T> set) {
+		BitSet ls = (BitSet)set;
+		size = -1; hash_value = -1;
+		this.bits.and(ls.bits);
+	}
+
+
+
+	
+	/**
+	 * The union operation on <code>this</code> and the supplied parameter.
+	 *  The result is new set (object).
+	 * @return a new BitSet containing all members of <code>this</code> 
+	 * and the supplied argument
+	 */
+	public void union(LatticeSet<T> set) {
+		BitSet<T> s = (BitSet<T>)set;
+		size = -1; hash_value = -1;
+		this.bits.or(s.bits);
+	}
+	
+	/**
+	 * Similar to union but returns true if <code>this</code> has been modified
+	 */
+	public boolean addAll(LatticeSet<T> set) {
+		BitVector tmp = (BitVector)this.bits.clone();
+		union(set);
+		return !this.bits.equals(tmp);
+	}
+	
+	/*
+	 * Clone set. 
+	 */
+	public LatticeSet<T> copy() {
+		BitSet<T> cpy = new BitSet<T>(set_factory);
+		cpy.bits = (BitVector) bits.clone();
+		return cpy;
+	}
+
+	
+	/**
+	 * Computes the intersection between <code>this</code> and the supplied 
+	 * <code>set</code>. The result is new set (object).
+	 * 
+	 * @return the intersection between <code>this</code> and  <code>set</code>.
+	 */
+	public LatticeSet<T> meet(LatticeSet<T> set) {
+		BitSet ls = (BitSet)set;
+		BitVector tmp = BitVector.and(this.bits,ls.bits);
+		BitSet<T> intersection = new BitSet<T>(tmp,set_factory);
+		return intersection;
+	}
+
+
+
+	
+	/**
+	 * The union operation on <code>this</code> and the supplied parameter.
+	 *  The result is new set (object).
+	 * @return a new BitSet containing all members of <code>this</code> 
+	 * and the supplied argument
+	 */
+	public LatticeSet<T> join(LatticeSet<T> set) {
+		BitSet<T> ls = (BitSet<T>)set;
+		BitVector tmp = BitVector.or(this.bits,ls.bits);
+		BitSet<T> union = new BitSet<T>(tmp,set_factory);
+		return union;
+	}
+	
+	
+
+	/**
+	 * Returns a single element if singleton (size=1) set, 
+	 * otherwise null.
+	 */
+	public T getSingleton() {
+		if (size() == 1)
+			return singleton;
+		else
+			return null;
+	}
+
+	
+	public int size() {
+		if (size > -1) {
+			if (size == 1 && singleton == null) {
+				singleton = new BitLatticeSetIterator<T>(set_factory).next();
+			}
+			return size;
+		}
+		else {
+	    	int count = 0;
+			BitLatticeSetIterator it = new BitLatticeSetIterator<T>(set_factory);
+			while (it.hasNext()) {
+				it.next();
+				count++;
+			}
+			size = count;
+			return size;
+		}
+	}
+
+
+	public boolean isEmpty() {
+		return size() == 0;
+	}
+
+	
+	public boolean contains(T element) {
+		int index = set_factory.indexOf(element);
+		return bits.get(index);
+	}
+
+	public Iterator<T> iterator() {
+		return new BitLatticeSetIterator<T>(set_factory);
+	}
+
+	
+	public boolean equalElement(LatticeSet<T> v) {
+		BitSet<T> other = (BitSet<T>)v;
+		return bits.equals(other.bits);
+	}
+
+	public int hashValue() {
+		if (hash_value > 1)
+			return hash_value;
+		else
+			return bits.hashCode();
+	}
+	
+	public boolean equals(Object v) {
+		BitSet<T> other = (BitSet<T>)v;
+		return bits.equals(other.bits);
+	}
+	
+	public int hashCode() {return hashValue();}
+
+
+	/**
+	 * Returns a string representation of this set in the form: 
+	 * {member1, member2, .. , memberN}
+	 */
+	public String toString()
+	{
+		 StringBuffer ret = new StringBuffer();
+		 ret.append('{');
+	     boolean start = true;
+	     BitLatticeSetIterator it = new BitLatticeSetIterator<T>(set_factory);
+	     Object o = null;
+	     while( it.hasNext() ) 
+	     {
+	     	o = it.next();
+	        if( !start ) ret.append( ", " );
+	        start = false;
+	        ret.append(o);
+	     }
+	     ret.append('}');
+	     return ret.toString();
+	}
+	/* ****************************************************************
+	 * 
+	 *   Private Utility Methods
+	 * 
+	 * ****************************************************************/
+	
+
+	/* 
+	 * An internal constructor used in union, intersection, and clone.
+	 */
+	private BitSet(BitVector bits,BitSetFactory<T> factory) {
+		set_factory = factory;
+		this.bits = bits;
+	}
+	
+
+
+	
+	private void addElement(T n) {
+		int index = set_factory.indexOf(n);
+        bits.set(index);
+    }
+	
+	private class BitLatticeSetIterator<X> implements Iterator<X> {
+		private final BitSetFactory<X> factory;
+		private final BitSetIterator bitit;
+		/**
+		 * Creates an iterator
+		 *
+		 */
+		public BitLatticeSetIterator(BitSetFactory<X> factory){
+			this.factory = factory;
+			bitit = bits.iterator();
+		}
+		
+		/**
+		 * If there's more elements to iterate over
+		 */
+		public boolean hasNext() {
+			return bitit.hasNext();
+		}
+		
+		/**
+		 * Returns the next object of the iterator
+		 */
+		public X next() {
+			return factory.elementAt(bitit.next());
+		}
+		
+		/**
+		 * The remove function - NOT SUPPORTED
+		 */
+		public void remove()throws UnsupportedOperationException, IllegalStateException
+		{
+			throw new UnsupportedOperationException();
+		}
+	}
+
+}

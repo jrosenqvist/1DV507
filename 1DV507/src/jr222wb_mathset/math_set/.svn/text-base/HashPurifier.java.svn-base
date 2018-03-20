@@ -1,0 +1,70 @@
+/*
+* This software is ...
+
+* HashPurifier.java
+* Created 2005-nov-05, 18:55:41
+*/
+package grail.semi_lattice;
+ 
+/**
+ * The hash table handling in this purifier is very much inspired 
+ * (stolen?) from the java.util.HashMap implementation.
+ * </p>
+ * Notice, the capacity must be a power-of two for the modulus
+ * to computation to work and the hash() method a supplemental 
+ * hashing to defend against poor quality hash functions. I admit
+ * that I don't understand this supplemental hashing. 
+ *
+ * @author jonasl
+ */
+
+public class HashPurifier<T> extends Purifier<T> {
+
+	public HashPurifier() {
+		super();
+	}
+
+	public HashPurifier(int init_size) {
+		super(init_size);
+	}
+
+	public HashPurifier(int init_size, float maximum_load) {
+		super(init_size, maximum_load);
+	}
+
+    /**
+     * Returns a new hash value in the interval [0,capacity]. In addition to 
+     * computing the modulo, this method applies a "supplemental
+     * hash function," which defends against poor quality hash functions.
+     * This is critical since this implementation uses power-of two length 
+     * hash tables.
+     * </p>
+     * The shift distances in this function were chosen as the result
+     * of an automated search over the entire four-dimensional search space.
+     * </p>
+     * 
+     */
+	
+	protected int hash(int hashValue) {
+        int h = hashValue;
+        h += ~(h << 9);
+        h ^=  (h >>> 14);
+        h +=  (h << 4);
+        h ^=  (h >>> 10);
+        
+        /* modulus */
+        return h & (capacity - 1);
+	}
+
+	/**
+	 * Computes next larger power-of two.
+	 */
+	protected int nextCapacity(int n) {
+		int res = 1;
+		while (res < n)
+			res <<= 1;
+		return res;
+	}
+
+}
+

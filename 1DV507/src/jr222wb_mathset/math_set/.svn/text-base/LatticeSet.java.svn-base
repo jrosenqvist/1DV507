@@ -1,0 +1,158 @@
+/**
+ * 
+ */
+package grail.semi_lattice;
+
+import java.util.Iterator;
+
+/**
+ * @author jonasl
+ *
+ */
+public interface LatticeSet<T> extends  Iterable<T> {
+	/**
+	 * Computes the theoretic, value-based equality of the lattice elements
+	 * <code>this</code> and <code>ls</code>.
+	 * To be distinguished from the object-oriented, reference-based notion of equality.
+	 *
+	 * @param    ls, a LatticeSet
+	 *
+	 * @return   a boolean
+	 *
+	 */
+	public boolean equalElement(LatticeSet<T> ls);
+	
+	/**
+	 * Returns the hash code for the lattice element <code>this</code>
+	 * When applied on two elements with the same theoretic value 
+	 * (see equalValues(LatticeElement le)), it must result in the same hash value. 
+	 * 
+	 * @return	an int
+	 */
+	public int hashValue();
+	
+	/**
+	 * Used for diagnostics. Returns an informative text suitable 
+	 * for print outs.
+	 * 
+	 * @return	a string describing the value
+	 */
+	public String toString();
+
+	
+	/**
+	 * Method size computes the set-theoretic cardinality of the set <code>this</code>
+	 *
+	 * @return   an int
+	 *
+	 */
+	public int size();
+	
+	/**
+	 * Method isEmptySet returns <code>true</code> iff <code>this</code> is an empty set
+	 * and <code>false</code>, otherwise.
+	 *
+	 * @return   a boolean
+	 *
+	 */
+	public boolean isEmpty();
+	
+	/**
+	 * Method contains returns <code>true</code> iff <code>this</code> contains the 
+	 * object element and <code>false</code>, otherwise.
+	 *
+	 * @return   a boolean
+	 *
+	 */
+	public boolean contains(T element);
+
+	/**
+	 * Method iterator returns an <code>Object</code> iterator over <code>this</code>
+	 *
+	 * @return   an Iterator
+	 *
+	 */
+	public Iterator<T> iterator();
+	
+	/**
+	 * Returns a single element if singleton (size=1) set, 
+	 * otherwise null. Introduced to avoid iterators when
+	 * accessing the element in a singleton set.
+	 */
+	public T getSingleton();
+
+	
+	/**
+	 * Method meet computes (and returns) the set-theoretic intersection of 
+	 * the sets <code>this</code> and <code>s</code>. The returned set
+	 * is a new set and neither <code>this</code> nor <code>s</code> is
+	 * affected by the operation.
+	 *
+	 * @param    s, a LatticeSet
+	 *
+	 * @return   a LatticeSet
+	 *
+	 * @pre sets <code>this</code> and <code>s</code> are of same (sub-)class
+	 */
+	public  LatticeSet<T> meet( LatticeSet<T> s);
+	
+	/**
+	 * Method join computes (and returns) the set-theoretic union of 
+	 * the sets <code>this</code> and <code>s</code>. The returned set
+	 * is a new set and neither <code>this</code> nor <code>s</code> is
+	 * affected by the operation.
+	 *
+	 * @param    s                   an UnionSet
+	 *
+	 * @return   an UnionSet
+	 *
+	 * @pre sets <code>this</code> and <code>s</code> are of same (sub-)class
+	 */
+	public  LatticeSet<T> join( LatticeSet<T> s);
+	
+	
+	/*
+	 * The following methods should not be used on lattice sets.
+	 * They mutate sets or breaks the empty sets encapsulation.
+	 * 
+	 */
+	
+	
+	
+	/**
+	 * Method union computes the set-theoretic intersection of the sets
+	 * <code>this</code> and <code>s</code>
+	 *
+	 * @param    s, a SimpleSet
+	 *
+	 * @pre sets <code>this</code> and <code>s</code> are of same (sub-)class
+	 */
+	public  void intersection( LatticeSet<T> s);
+	
+	/**
+	 * Method union computes the set-theoretic union of the sets
+	 * <code>this</code> and <code>s</code>
+	 *
+	 * @param    s, a SimpleSet
+	 *
+	 *
+	 * @pre sets <code>this</code> and <code>s</code> are of same (sub-)class
+	 */
+	public  boolean addAll( LatticeSet<T> s);
+	
+	/**
+	 * Similar to union but returns true if <code>this</code> has been modified
+	 *
+	 * @param    s, a LatticeSet
+	 *
+	 * @return   <code>true</code> if <code>this</code> has been modified
+	 *
+	 *
+	 * @pre sets <code>this</code> and <code>s</code> are of same (sub-)class
+	 */
+	public  void union( LatticeSet<T> s);
+	
+	public LatticeSet<T> copy();
+	
+	
+}
