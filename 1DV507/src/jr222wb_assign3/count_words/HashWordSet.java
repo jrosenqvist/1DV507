@@ -1,53 +1,33 @@
 package jr222wb_assign3.count_words;
 
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 public class HashWordSet implements WordSet {
-	private int size = 0;
-	private Node[] buckets = new Node[8]; 
+	private int size = 0; //Size of set
+	private Node[] buckets = new Node[8]; //Array acting as buckets for nodes 
 
 	public Iterator<Object> iterator() {
 		return new HashIterator();		
 	}	
 
 	public void add(Word w) {
-		int pos = getBucketNumber(w);
-		Node bucket = buckets[pos];
+		if (contains(w)) //Return out of method if word already exists
+			return;		
 
-		while (bucket != null) { //If bucket not empty, look for node containing word
-			if (bucket.word.equals(w)) //Exit out of add method if found
-				return;
-			else				
-				bucket = bucket.next; //Continue looking until no more nodes in bucket
-		}
-
-		//If word was not found in bucket
-		bucket = new Node(w); //Create new node containing word
-		bucket.next = buckets[pos];
+		Node bucket = new Node(w); //Otherwise, create a new node containing the word
+		int pos = getBucketNumber(w); //Get bucket to store it in		
+		bucket.next = buckets[pos]; //Attach node to bucket
 		buckets[pos] = bucket;
-		size++;
-		if (size == buckets.length)
+		size++; //Increase size
+		if (size == buckets.length) //If necessary, increase size of array
 			rehash();
 	}	
 
-	private void rehash() {
-		Node[] temp = buckets;
-		buckets = new Node[2 * temp.length];
-		size = 0;
-		for (Node n : temp) {
-			if (n == null)
-				continue;
-			while (n != null) {
-				add(n.word);
-				n = n.next;
-			}
-		}
-	}
-
-	public boolean contains(Word w) {
-		int pos = getBucketNumber(w);
+	public boolean contains(Word w) { 
+		int pos = getBucketNumber(w); //Get bucket where word should be
 		Node node = buckets[pos];
-		while (node != null) {
+		while (node != null) { //Search through nodes in bucket
 			if (node.word.equals(w))
 				return true;
 			else
@@ -60,51 +40,56 @@ public class HashWordSet implements WordSet {
 		return size;
 	}
 
-	private class Node {
-		Word word;
-		Node next = null;
-
-		public Node(Word w) { word = w;	}
-
-		public String toString() {
-			return word.toString();
-		}
+	private void rehash() {
+		Node[] temp = buckets; //Store current array
+		buckets = new Node[2 * temp.length]; //Create new array twice current's size
+		size = 0; //Reset size before transferring nodes to new array
+		for (Node n : temp)  //For each node in old array, add it to new array using add method		
+			while (n != null) {
+				add(n.word);
+				n = n.next;
+			}		
 	}
-	
+
+	private class Node {
+		Word word; //Field containing word
+		Node next = null; //Where to find next node
+		public Node(Word w) { 
+			word = w; 	
+		}		
+	}
+
 	private int getBucketNumber(Word w) {
-		int hc = w.hashCode();
-		if (hc < 0)
-			hc = -hc;
-		return hc % buckets.length;
+		int hc = w.hashCode(); //Calculate a hashcode of word
+		if (hc < 0) 
+			hc = -hc; //Make sure it's positive
+		return hc % buckets.length; //Assign it a position that fits within array
 	}
 
 	private class HashIterator implements Iterator<Object> {
-		private int bucket = -1;
-		private Node current = null;
+		int pos = -1; //Current position in array
+		Node current = null; //Current node		
 
 		public boolean hasNext() {
-			if (current != null && current.next != null)
-				return true;
-			for (int i = bucket + 1; i < buckets.length; i++) 				
-				if (buckets[i] != null) {
-					System.out.println("Next node found at " + i);
-					return true; 		
-				}
-			return false;
+			if (current != null && current.next != null) //If additional nodes in bucket
+				return true;			
+			for (int i = pos + 1; i<buckets.length; i++) //Else, search rest of array for next bucket with nodes
+				if (buckets[i] != null) 
+					return true;				
+			return false; //No more nodes in array
 		}
-		//TODO någonstans måste current uppdateras som det ska ELLER?! Skriv pseudokod
 
-		public Object next() {			
-			if (current != null && current.next != null) 
-				current = current.next;							
-			else {
-				while (current == null && bucket < buckets.length) {					
-					bucket++;					
-				}
-				current = buckets[bucket];
-			}
-			return current;
-		}		
+		public Object next() {	
+			if (current != null && current.next != null) //Move to next linked node if one exists
+				current = current.next;						
+			else //Else, loop through array in search of next node				
+				do {
+					if (pos + 1 == buckets.length)
+						throw new NoSuchElementException(); //Throw exception if trying to do next when end is reached
+					current = buckets[++pos];					
+				} while (current == null); //Until node found
+			return current.word; //Return currently selected node
+		}
 	}
 }
 

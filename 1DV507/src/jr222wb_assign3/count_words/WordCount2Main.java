@@ -34,17 +34,14 @@ public class WordCount2Main {
 		}
 		System.out.println();
 
-		/*System.out.println();
-		Iterator<Object> iterHash = hash.iterator();
+		System.out.println();
+		Iterator<Object> iterHash = hash.iterator();		
 		while (iterHash.hasNext()) {
 			System.out.print(iterHash.next() + " ");
 		}
-
-		/*System.out.println(tree.size());
-
-		for (Word w : tree) {
-			System.out.print(w + " ");
-		}*/
+		System.out.println();
+		System.out.println(tree.size());
+		
 	}
 }
 
