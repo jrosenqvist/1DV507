@@ -45,7 +45,7 @@ class BinaryIntHeapTest {
 		assertEquals(1, bih2.pullHighest());
 		assertEquals(-2, bih2.pullHighest());
 		assertEquals(-57571, bih2.pullHighest());
-		assertEquals(true, bih2.isEmpty());
+		assertEquals(true, bih2.isEmpty()); //Make sure isEmpty also works after pull
 	}
 
 }
