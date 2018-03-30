@@ -45,6 +45,11 @@ public class TinyPainter extends Application {
 			/* On mouse press, choose what to do based on selected shape. If necessary, read size.
 			 * Colour value is read when creating shape.
 			 */
+			
+			//Reset any active lambda
+			scene.setOnMouseReleased(r -> {});
+			scene.setOnMouseClicked(r -> {});
+			scene.setOnMouseDragged(r -> {});
 
 			//Line
 			if (shape.getSelectionModel().getSelectedIndex() == 0) {				
@@ -74,9 +79,7 @@ public class TinyPainter extends Application {
 					Rectangle s = new Rectangle(d.getSceneX(), d.getSceneY(), size.getValue(), size.getValue());
 					s.setFill(colour.getValue());
 					root.getChildren().add(s);
-				});
-
-				scene.setOnMouseReleased(r -> {}); //Problem with lambda from previous shape interfering without this line
+				});				
 			}
 
 			//Rectangle
